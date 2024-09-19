@@ -4,13 +4,13 @@
     <nav class="navbar navbar-light bg-warning">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
-          <img src="/src/img/Yu-Gi-Oh!.png" alt="Yu-Gi-Oh" width="30" height="30" class="d-inline-block align-text-top">
+          <img src="logo.png" alt="Yu-Gi-Oh" width="30" height="30" class="d-inline-block align-text-top">
           Yu-Gi-Oh Api
         </a>
+        <!-- Dropdown per selezionare l'archetipo -->
         <select class="form-select w-auto" v-model="selectedArchetype" @change="fetchCards">
-          <option value="Alien">Alien</option>
-          <option value="Blue-Eyes">Blue-Eyes</option>
-          <option value="Dark Magician">Dark Magician</option>
+          <option value="" disabled>Seleziona un archetipo</option>
+          <option v-for="archetype in archetypes" :key="archetype" :value="archetype">{{ archetype }}</option>
         </select>
       </div>
     </nav>
@@ -41,21 +41,32 @@ export default {
   data() {
     return {
       cards: [],
+      archetypes: [],
       loading: true,
-      selectedArchetype: 'Alien'
+      selectedArchetype: '',
     };
   },
   async created() {
+    await this.fetchArchetypes();
     this.fetchCards();
   },
   methods: {
+    async fetchArchetypes() {
+      try {
+        const response = await axios.get('https://db.ygoprodeck.com/api/v7/archetypes.php');
+        this.archetypes = response.data.map(archetype => archetype.archetype_name);
+      } catch (error) {
+        console.error("Errore nel caricamento degli archetipi:", error);
+      }
+    },
     async fetchCards() {
+      if (!this.selectedArchetype) return;
       this.loading = true;
       try {
         const response = await axios.get(`https://db.ygoprodeck.com/api/v7/cardinfo.php?archetype=${this.selectedArchetype}&num=20&offset=0`);
         this.cards = response.data.data;
       } catch (error) {
-        console.error(error);
+        console.error("Errore nel caricamento delle carte:", error);
       } finally {
         this.loading = false;
       }
