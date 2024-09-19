@@ -4,10 +4,9 @@
     <nav class="navbar navbar-light bg-warning">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
-          <img src="logo.png" alt="Yu-Gi-Oh" width="30" height="30" class="d-inline-block align-text-top">
+          <img src="/src/img/Yu-Gi-Oh!.png" alt="Yu-Gi-Oh" width="30" height="30" class="d-inline-block align-text-top">
           Yu-Gi-Oh Api
         </a>
-        <!-- Dropdown per selezionare l'archetipo -->
         <select class="form-select w-auto" v-model="selectedArchetype" @change="fetchCards">
           <option value="" disabled>Seleziona un archetipo</option>
           <option v-for="archetype in archetypes" :key="archetype" :value="archetype">{{ archetype }}</option>
@@ -22,6 +21,7 @@
       </div>
       <div v-else>
         <h5 class="mt-3">Found {{ cards.length }} cards</h5>
+        <CardCount :total="cards.length" />
         <CardList :cards="cards" />
       </div>
     </div>
@@ -32,11 +32,13 @@
 import axios from 'axios';
 import Loader from './components/Loader.vue';
 import CardList from './components/CardList.vue';
+import CardCount from './components/CardCount.vue';
 
 export default {
   components: {
     Loader,
-    CardList
+    CardList,
+    CardCount
   },
   data() {
     return {
@@ -74,9 +76,3 @@ export default {
   }
 };
 </script>
-
-<style>
-body {
-  background-color: #f4f4f4;
-}
-</style>
